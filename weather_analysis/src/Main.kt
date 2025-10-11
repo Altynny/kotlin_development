@@ -15,7 +15,7 @@ fun main() {
     val temps = mutableMapOf<String, Double>()
     for ((id, name) in cities) {
         val weather_url =
-            "http://api.openweathermap.org/data/2.5/weather?id=$id&appid=$API_KEY"
+            "http://api.openweathermap.org/data/2.5/weather?units=metric&id=$id&appid=$API_KEY"
         println(weather_url)
         val url = URL(weather_url)
         val stream = url.getContent() as InputStream
@@ -27,6 +27,6 @@ fun main() {
         Thread.sleep(200)
     }
     for ((city, temp) in temps.toList().sortedBy { -it.second }) {
-        println("$city, температура - ${temp}K")
+        println("$city, температура - ${temp}C")
     }
 }
