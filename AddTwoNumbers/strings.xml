@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AddTwoNumbers</string>
+    <string name="hintA">Enter number A</string>
+    <string name="hintB">Enter number B</string>
+    <string name="sum">Sum</string>
+    <string name="emptyField">Enter both numbers to sum!</string>
+</resources>
