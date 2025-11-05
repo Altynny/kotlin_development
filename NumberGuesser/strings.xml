@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">NumberGuesser</string>
+    <string name="lower_limit">Lower limit</string>
+    <string name="upper_limit">Upper limit</string>
+    <string name="guess_button">Start guessing</string>
+    <string name="positive_answer">YES</string>
+    <string name="negative_answer">No</string>
+    <string name="question">Your number is greater than %1$d?</string>
+    <string name="guess">Your number is %1$d?</string>
+    <string name="final_answer">Your number is %1$d</string>
+    <string name="restart">Guess another number</string>
+</resources>
