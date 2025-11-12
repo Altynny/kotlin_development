@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">screenOrientation</string>
+    <string name="change_picture">Change picture</string>
+    <string-array name="pictures">
+        <item>car 1</item>
+        <item>car 2</item>
+        <item>car 3</item>
+    </string-array>
+    <array name="picture_files">
+        <item>@drawable/car1</item>
+        <item>@drawable/car2</item>
+        <item>@drawable/car3</item>
+    </array>
+</resources>

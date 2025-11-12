@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/picture"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/squarecat" />
+    <Spinner
+        android:entries="@array/pictures"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/pictures_list"
+        />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/change_picture"
+        android:textSize="30sp"
+        android:onClick="onChangePictureClick"
+        />
+
+</LinearLayout>
