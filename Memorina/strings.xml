@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Memorina</string>
+    <string-array name="card_names">
+        <item>flower</item>
+        <item>joker</item>
+        <item>cat</item>
+        <item>smile</item>
+    </string-array>
+    <array name="card_files">
+        <item>@drawable/flower_pot</item>
+        <item>@drawable/joker</item>
+        <item>@drawable/lucky_cat</item>
+        <item>@drawable/smiley_face</item>
+    </array>
+</resources>
