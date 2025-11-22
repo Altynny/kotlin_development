@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Adapters</string>
+    <string name="input">Type name in</string>
+    <string name="confirm">Add person to list</string>
+    <string-array name="first_names">
+        <item>Petya</item>
+        <item>Vasya</item>
+        <item>Mary</item>
+        <item>Vanya</item>
+        <item>John</item>
+        <item>James</item>
+    </string-array>
+    <string-array name="second_names">
+        <item>Petrov</item>
+        <item>Vasilkov</item>
+        <item>Poppins</item>
+        <item>Ivanov</item>
+        <item>Doe</item>
+        <item>Bond</item>
+    </string-array>
+</resources>
