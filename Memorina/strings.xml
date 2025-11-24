@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Memorina</string>
+    <string name="play_again">Сыграть ещё</string>
+    <string name="congrats_text">Вы выиграли!</string>
     <string-array name="card_names">
         <item>flower</item>
         <item>joker</item>
