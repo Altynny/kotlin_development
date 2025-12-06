@@ -3,6 +3,8 @@ package com.example.widgetsdemo2728
 import android.os.Bundle
 import android.util.Log
 import android.view.inputmethod.EditorInfo
+import android.widget.CompoundButton
+import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -16,6 +18,9 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
     private val weatherData = WeatherData()
+    private var lastCity: String? = null
+    private var lastWindSpeed: Double = Double.NaN
+    private var lastWindDeg: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,8 +30,9 @@ class MainActivity : AppCompatActivity() {
         binding.buttonFetch.setOnClickListener {
             val city = binding.editCity.text.toString().trim()
             if (city.isEmpty()) {
-                Toast.makeText(this, "Введите город", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.hint_city), Toast.LENGTH_SHORT).show()
             } else {
+                lastCity = city
                 fetchWeather(city)
             }
         }
@@ -36,6 +42,17 @@ class MainActivity : AppCompatActivity() {
                 binding.buttonFetch.performClick()
                 true
             } else false
+        }
+
+        binding.radioGroupUnits.setOnCheckedChangeListener { _: RadioGroup, _: Int ->
+            weatherData.unitSymbol.set(if (binding.rbF.isChecked) "°F" else "°C")
+            lastCity?.let {
+                fetchWeather(it)
+            }
+        }
+
+        binding.cbShowWindDir.setOnCheckedChangeListener { _: CompoundButton, _: Boolean ->
+            updateWindDisplay()
         }
     }
 
@@ -50,8 +67,9 @@ class MainActivity : AppCompatActivity() {
                     return@Thread
                 }
 
+                val units = if (binding.rbF.isChecked) "imperial" else "metric"
                 val q = URLEncoder.encode(cityName, "UTF-8")
-                val urlStr = "https://api.openweathermap.org/data/2.5/weather?q=$q&appid=$apiKey&units=metric"
+                val urlStr = "https://api.openweathermap.org/data/2.5/weather?q=$q&appid=$apiKey&units=$units"
                 val url = URL(urlStr)
                 val conn = url.openConnection() as HttpURLConnection
                 conn.requestMethod = "GET"
@@ -86,14 +104,19 @@ class MainActivity : AppCompatActivity() {
                 val windSpeed = windObj?.optDouble("speed", Double.NaN) ?: Double.NaN
                 val windDeg = windObj?.optInt("deg", -1) ?: -1
 
+                lastWindSpeed = windSpeed
+                lastWindDeg = windDeg
+
                 // Обновляем UI через main thread
                 runOnUiThread {
                     weatherData.city.set(name)
-                    weatherData.temp.set(if (!temp.isNaN()) String.format(Locale.getDefault(), "%.1f °C", temp) else "")
+                    val unitSymbol = if (binding.rbF.isChecked) "°F" else "°C"
+                    weatherData.unitSymbol.set(unitSymbol)
+                    weatherData.temp.set(if (!temp.isNaN()) String.format(Locale.getDefault(), "%.1f %s", temp, unitSymbol) else "")
                     weatherData.description.set(desc.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
                     weatherData.humidity.set(if (humidity >= 0) "Влажность: $humidity%" else "")
-                    weatherData.wind.set(if (!windSpeed.isNaN()) "Ветер: ${windSpeed} м/с ${if (windDeg >= 0) "($windDeg°)" else ""}" else "")
                     weatherData.iconCode.set(icon)
+                    updateWindDisplay()
                 }
 
             } catch (t: Throwable) {
@@ -103,5 +126,25 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }.start()
+    }
+
+    private fun updateWindDisplay() {
+        runOnUiThread {
+            val speedPart = if (!lastWindSpeed.isNaN()) {
+                val unitSpeed = if (binding.rbF.isChecked) "миль/ч" else "м/с"
+                String.format(Locale.getDefault(), "Скорость ветра: %.1f %s", lastWindSpeed, unitSpeed)
+            } else {
+                ""
+            }
+
+            val dirPart = if (lastWindDeg >= 0 && binding.cbShowWindDir.isChecked) {
+                " (направление: $lastWindDeg°)"
+            } else {
+                ""
+            }
+
+            val windText = if (speedPart.isNotEmpty()) speedPart + dirPart else ""
+            weatherData.wind.set(windText)
+        }
     }
 }

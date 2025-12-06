@@ -26,11 +26,48 @@
                 android:inputType="text"
                 android:imeOptions="actionDone"/>
 
-            <Button
-                android:id="@+id/buttonFetch"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp">
+
+                <Button
+                    android:id="@+id/buttonFetch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_get_weather"/>
+
+                <!-- Радио-кнопки для выбора шкалы -->
+                <RadioGroup
+                    android:id="@+id/radioGroupUnits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginStart="16dp">
+
+                    <RadioButton
+                        android:id="@+id/rbC"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="°C"
+                        android:checked="true"/>
+
+                    <RadioButton
+                        android:id="@+id/rbF"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="°F"/>
+                </RadioGroup>
+            </LinearLayout>
+
+            <CheckBox
+                android:id="@+id/cbShowWindDir"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/btn_get_weather"
+                android:text="Показывать направление ветра"
+                android:checked="true"
                 android:layout_marginTop="8dp"/>
 
             <TextView

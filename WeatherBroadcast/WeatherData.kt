@@ -9,4 +9,5 @@ class WeatherData {
     val humidity = ObservableField<String>("")
     val wind = ObservableField<String>("")
     val iconCode = ObservableField<String>("")
+    val unitSymbol = ObservableField<String>("°C")
 }
