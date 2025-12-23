@@ -1,0 +1,42 @@
+[
+  {
+    "title": "Inception",
+    "year": 2010,
+    "director": "Christopher Nolan",
+    "genres": ["Science Fiction", "Action"],
+    "rating": 8.8,
+    "description": "A thief infiltrates the subconscious through dream-sharing technology to steal or implant ideas."
+  },
+  {
+    "title": "Interstellar",
+    "year": 2014,
+    "director": "Christopher Nolan",
+    "genres": ["Science Fiction"],
+    "rating": 8.7,
+    "description": "Astronauts travel through a wormhole to find a new home for humanity amid Earth's blight."
+  },
+  {
+    "title": "The Truman Show",
+    "year": 1998,
+    "director": "Peter Weir",
+    "genres": ["Comedy", "Drama"],
+    "rating": 8.2,
+    "description": "Truman lives unaware his life is a staged reality TV show broadcast worldwide."
+  },
+  {
+    "title": "The Mask",
+    "year": 1994,
+    "director": "Chuck Russell",
+    "genres": ["Comedy", "Superhero"],
+    "rating": 6.9,
+    "description": "A bank teller finds a magical mask that turns him into a green-faced trickster."
+  },
+  {
+    "title": "Bee Movie",
+    "year": 2007,
+    "director": "Simon J. Smith, Steve Hickner",
+    "genres": ["Animation", "Comedy"],
+    "rating": 6.1,
+    "description": "A bee sues humans for exploiting bees after discovering they sell honey."
+  }
+]
