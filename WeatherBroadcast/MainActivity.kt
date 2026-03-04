@@ -3,12 +3,16 @@ package com.example.widgetsdemo2728
 import android.os.Bundle
 import android.util.Log
 import android.view.inputmethod.EditorInfo
+import android.widget.Button
+import android.widget.CheckBox
 import android.widget.CompoundButton
+import android.widget.EditText
+import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
-import com.example.widgetsdemo2728.databinding.ActivityMainBinding
+import androidx.fragment.app.Fragment
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
@@ -16,19 +20,33 @@ import java.net.URLEncoder
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
-    lateinit var binding: ActivityMainBinding
-    private val weatherData = WeatherData()
+    val sharedViewModel: SharedViewModel by viewModels()
     private var lastCity: String? = null
     private var lastWindSpeed: Double = Double.NaN
     private var lastWindDeg: Int = -1
+    lateinit var briefFragment: Fragment
+    lateinit var detailedFragment: Fragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        binding.weather = weatherData
+        setContentView(R.layout.activity_main)
 
-        binding.buttonFetch.setOnClickListener {
-            val city = binding.editCity.text.toString().trim()
+        if (savedInstanceState == null) {
+            briefFragment = BriefFragment()
+            detailedFragment = DetailedFragment()
+            supportFragmentManager.beginTransaction()
+                .add(R.id.container_fragm, briefFragment)
+                .commit()
+        }
+
+        val buttonFetch =  findViewById<Button>(R.id.buttonFetch)
+        val editCity =  findViewById<EditText>(R.id.editCity)
+        val radioGroupUnits =  findViewById<RadioGroup>(R.id.radioGroupUnits)
+        val cbShowWindDir =  findViewById<CheckBox>(R.id.cbShowWindDir)
+        val rbF =  findViewById<RadioButton>(R.id.rbF)
+
+        buttonFetch.setOnClickListener {
+            val city = editCity.text.toString().trim()
             if (city.isEmpty()) {
                 Toast.makeText(this, getString(R.string.hint_city), Toast.LENGTH_SHORT).show()
             } else {
@@ -37,39 +55,44 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.editCity.setOnEditorActionListener { _, actionId, _ ->
+        editCity.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                binding.buttonFetch.performClick()
+                buttonFetch.performClick()
                 true
             } else false
         }
 
-        binding.radioGroupUnits.setOnCheckedChangeListener { _: RadioGroup, _: Int ->
-            weatherData.unitSymbol.set(if (binding.rbF.isChecked) "°F" else "°C")
-            lastCity?.let {
-                fetchWeather(it)
-            }
+        radioGroupUnits.setOnCheckedChangeListener { _: RadioGroup, _: Int ->
+            sharedViewModel.weatherData.unitSymbol.set(if (rbF.isChecked) "°F" else "°C")
+            lastCity?.let { fetchWeather(it) }
         }
 
-        binding.cbShowWindDir.setOnCheckedChangeListener { _: CompoundButton, _: Boolean ->
+        cbShowWindDir.setOnCheckedChangeListener { _: CompoundButton, _: Boolean ->
             updateWindDisplay()
         }
+
+        val changeBrief = findViewById<Button>(R.id.brief)
+        val changeDetailed = findViewById<Button>(R.id.detailed)
+
+        changeBrief.setOnClickListener {
+            val ft = supportFragmentManager.beginTransaction()
+            ft.replace(R.id.container_fragm, briefFragment)
+            ft.commit() }
+
+        changeDetailed.setOnClickListener {
+            val ft = supportFragmentManager.beginTransaction()
+            ft.replace(R.id.container_fragm, detailedFragment)
+            ft.commit() }
     }
 
     private fun fetchWeather(cityName: String) {
         Thread {
             try {
+                val rbF =  findViewById<RadioButton>(R.id.rbF)
                 val apiKey = getString(R.string.openweather_api_key).trim()
-                if (apiKey.isEmpty() || apiKey == "ВАШ_API_КЛЮЧ") {
-                    runOnUiThread {
-                        Toast.makeText(this, "Положите API ключ в strings.xml (openweather_api_key)", Toast.LENGTH_LONG).show()
-                    }
-                    return@Thread
-                }
-
-                val units = if (binding.rbF.isChecked) "imperial" else "metric"
+                val units = if (rbF.isChecked) "imperial" else "metric"
                 val q = URLEncoder.encode(cityName, "UTF-8")
-                val urlStr = "https://api.openweathermap.org/data/2.5/weather?q=$q&appid=$apiKey&units=$units"
+                val urlStr = "https://api.openweathermap.org/data/2.5/weather?q=$q&appid=$apiKey&units=$units&lang=ru"
                 val url = URL(urlStr)
                 val conn = url.openConnection() as HttpURLConnection
                 conn.requestMethod = "GET"
@@ -89,7 +112,6 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 val json = JSONObject(body)
-                Log.d("WeatherFetch", body)
 
                 val name = json.optString("name", cityName)
                 val main = json.optJSONObject("main")
@@ -109,13 +131,13 @@ class MainActivity : AppCompatActivity() {
 
                 // Обновляем UI через main thread
                 runOnUiThread {
-                    weatherData.city.set(name)
-                    val unitSymbol = if (binding.rbF.isChecked) "°F" else "°C"
-                    weatherData.unitSymbol.set(unitSymbol)
-                    weatherData.temp.set(if (!temp.isNaN()) String.format(Locale.getDefault(), "%.1f %s", temp, unitSymbol) else "")
-                    weatherData.description.set(desc.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
-                    weatherData.humidity.set(if (humidity >= 0) "Влажность: $humidity%" else "")
-                    weatherData.iconCode.set(icon)
+                    sharedViewModel.weatherData.city.set(name)
+                    val unitSymbol = if (rbF.isChecked) "°F" else "°C"
+                    sharedViewModel.weatherData.unitSymbol.set(unitSymbol)
+                    sharedViewModel.weatherData.temp.set(if (!temp.isNaN()) String.format(Locale.getDefault(), "%.1f %s", temp, unitSymbol) else "")
+                    sharedViewModel.weatherData.description.set(desc.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
+                    sharedViewModel.weatherData.humidity.set(if (humidity >= 0) "Влажность: $humidity%" else "")
+                    sharedViewModel.weatherData.iconCode.set(icon)
                     updateWindDisplay()
                 }
 
@@ -130,21 +152,25 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateWindDisplay() {
         runOnUiThread {
-            val speedPart = if (!lastWindSpeed.isNaN()) {
-                val unitSpeed = if (binding.rbF.isChecked) "миль/ч" else "м/с"
-                String.format(Locale.getDefault(), "Скорость ветра: %.1f %s", lastWindSpeed, unitSpeed)
-            } else {
-                ""
+            val cbShowWindDir = findViewById<CheckBox>(R.id.cbShowWindDir)
+            val rbF =  findViewById<RadioButton>(R.id.rbF)
+
+            if (!cbShowWindDir.isChecked) {
+                sharedViewModel.weatherData.wind.set("")
+                return@runOnUiThread
             }
 
-            val dirPart = if (lastWindDeg >= 0 && binding.cbShowWindDir.isChecked) {
+            val speedPart = if (!lastWindSpeed.isNaN()) {
+                val unitSpeed = if (rbF.isChecked) "миль/ч" else "м/с"
+                String.format(Locale.getDefault(), "Скорость ветра: %.1f %s", lastWindSpeed, unitSpeed)
+            } else {""}
+
+            val dirPart = if (lastWindDeg >= 0) {
                 " (направление: $lastWindDeg°)"
-            } else {
-                ""
-            }
+            } else {""}
 
             val windText = if (speedPart.isNotEmpty()) speedPart + dirPart else ""
-            weatherData.wind.set(windText)
+            sharedViewModel.weatherData.wind.set(windText)
         }
     }
 }
