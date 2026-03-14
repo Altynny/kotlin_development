@@ -10,34 +10,61 @@ import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
+import android.widget.Toolbar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.fragment.app.Fragment
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
-import java.util.*
+import java.util.Locale
+
 
 class MainActivity : AppCompatActivity() {
     val sharedViewModel: SharedViewModel by viewModels()
     private var lastCity: String? = null
+    private var lastLocale: String? = null
     private var lastWindSpeed: Double = Double.NaN
     private var lastWindDeg: Int = -1
     lateinit var briefFragment: Fragment
     lateinit var detailedFragment: Fragment
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("city", lastCity)
+        outState.putString("locale", lastLocale)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        briefFragment = supportFragmentManager.findFragmentByTag("BRIEF_TAG") ?: BriefFragment()
+        detailedFragment = supportFragmentManager.findFragmentByTag("DETAILED_TAG") ?: DetailedFragment()
+
         if (savedInstanceState == null) {
+            lastLocale = "ru"
             briefFragment = BriefFragment()
             detailedFragment = DetailedFragment()
             supportFragmentManager.beginTransaction()
-                .add(R.id.container_fragm, briefFragment)
+                .add(R.id.container_fragm, briefFragment, "BRIEF_TAG")
                 .commit()
+        } else {
+            lastCity = savedInstanceState.getString("city")
+            lastLocale = savedInstanceState.getString("locale")
         }
+
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        toolbar.inflateMenu(R.menu.languages)
+        toolbar.setOnMenuItemClickListener { item ->
+            lastLocale = item.toString()
+            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(lastLocale)
+            AppCompatDelegate.setApplicationLocales(appLocale)
+            lastCity?.let { fetchWeather(it) }
+            ; true }
 
         val buttonFetch =  findViewById<Button>(R.id.buttonFetch)
         val editCity =  findViewById<EditText>(R.id.editCity)
@@ -76,12 +103,12 @@ class MainActivity : AppCompatActivity() {
 
         changeBrief.setOnClickListener {
             val ft = supportFragmentManager.beginTransaction()
-            ft.replace(R.id.container_fragm, briefFragment)
+            ft.replace(R.id.container_fragm, briefFragment, "BRIEF_TAG")
             ft.commit() }
 
         changeDetailed.setOnClickListener {
             val ft = supportFragmentManager.beginTransaction()
-            ft.replace(R.id.container_fragm, detailedFragment)
+            ft.replace(R.id.container_fragm, detailedFragment, "DETAILED_TAG")
             ft.commit() }
     }
 
@@ -92,7 +119,7 @@ class MainActivity : AppCompatActivity() {
                 val apiKey = getString(R.string.openweather_api_key).trim()
                 val units = if (rbF.isChecked) "imperial" else "metric"
                 val q = URLEncoder.encode(cityName, "UTF-8")
-                val urlStr = "https://api.openweathermap.org/data/2.5/weather?q=$q&appid=$apiKey&units=$units&lang=ru"
+                val urlStr = "https://api.openweathermap.org/data/2.5/weather?q=$q&appid=$apiKey&units=$units&lang=$lastLocale"
                 val url = URL(urlStr)
                 val conn = url.openConnection() as HttpURLConnection
                 conn.requestMethod = "GET"
@@ -136,7 +163,7 @@ class MainActivity : AppCompatActivity() {
                     sharedViewModel.weatherData.unitSymbol.set(unitSymbol)
                     sharedViewModel.weatherData.temp.set(if (!temp.isNaN()) String.format(Locale.getDefault(), "%.1f %s", temp, unitSymbol) else "")
                     sharedViewModel.weatherData.description.set(desc.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() })
-                    sharedViewModel.weatherData.humidity.set(if (humidity >= 0) "Влажность: $humidity%" else "")
+                    sharedViewModel.weatherData.humidity.set(if (humidity >= 0) getString(R.string.humidity,humidity) else "")
                     sharedViewModel.weatherData.iconCode.set(icon)
                     updateWindDisplay()
                 }
@@ -144,7 +171,8 @@ class MainActivity : AppCompatActivity() {
             } catch (t: Throwable) {
                 t.printStackTrace()
                 runOnUiThread {
-                    Toast.makeText(this, "Ошибка: ${t.localizedMessage}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this,
+                        getString(R.string.error, t.localizedMessage), Toast.LENGTH_LONG).show()
                 }
             }
         }.start()
@@ -161,12 +189,13 @@ class MainActivity : AppCompatActivity() {
             }
 
             val speedPart = if (!lastWindSpeed.isNaN()) {
-                val unitSpeed = if (rbF.isChecked) "миль/ч" else "м/с"
-                String.format(Locale.getDefault(), "Скорость ветра: %.1f %s", lastWindSpeed, unitSpeed)
+                val unitSpeed = if (rbF.isChecked) getString(R.string.mph) else getString(R.string.mps)
+                String.format(Locale.getDefault(),
+                    getString(R.string.wind_speed), lastWindSpeed, unitSpeed)
             } else {""}
 
             val dirPart = if (lastWindDeg >= 0) {
-                " (направление: $lastWindDeg°)"
+                getString(R.string.direction, lastWindDeg)
             } else {""}
 
             val windText = if (speedPart.isNotEmpty()) speedPart + dirPart else ""

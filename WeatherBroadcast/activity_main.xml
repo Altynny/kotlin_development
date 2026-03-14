@@ -10,10 +10,17 @@
         android:orientation="vertical"
         android:gravity="center_horizontal">
 
+        <Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:title="@string/app_name"/>
+
         <EditText
             android:id="@+id/editCity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:autofillHints=""
             android:hint="@string/hint_city"
             android:inputType="text"
             android:imeOptions="actionDone"/>
@@ -31,7 +38,6 @@
                     android:layout_height="wrap_content"
                     android:text="@string/btn_get_weather"/>
 
-                <!-- Радио-кнопки для выбора шкалы -->
                 <RadioGroup
                     android:id="@+id/radioGroupUnits"
                     android:layout_width="wrap_content"
@@ -43,14 +49,14 @@
                         android:id="@+id/rbC"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="°C"
+                        android:text="@string/celsius"
                         android:checked="true"/>
 
                     <RadioButton
                         android:id="@+id/rbF"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="°F"/>
+                        android:text="@string/fahrenheit"/>
                 </RadioGroup>
             </LinearLayout>
 
@@ -58,24 +64,29 @@
             android:id="@+id/cbShowWindDir"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Показывать направление ветра"
+            android:text="@string/show_wind_direction"
             android:checked="true"
             android:layout_marginTop="8dp"/>
 
         <LinearLayout
+            style="?android:attr/buttonBarStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical">
+
             <Button
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="70dp"
-                android:text="Краткий прогноз"
+                android:text="@string/brief_broadcast"
                 android:id="@+id/brief"
-                android:layout_margin="10dp"/>
+                android:layout_margin="10dp" />
+
             <Button
+                style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="70dp"
-                android:text="Подробное описание"
+                android:text="@string/detailed_broadcast"
                 android:id="@+id/detailed"
                 android:layout_margin="10dp"/>
         </LinearLayout>

@@ -1,6 +1,0 @@
-<resources>
-    <string name="app_name">WidgetsDemo2728</string>
-    <string name="openweather_api_key"></string>
-    <string name="hint_city">Введите город</string>
-    <string name="btn_get_weather">Получить погоду</string>
-</resources>

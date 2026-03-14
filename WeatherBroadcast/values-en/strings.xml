@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hint_city">Enter city</string>
+    <string name="btn_get_weather">Get weather</string>
+    <string name="show_wind_direction">Show wind direction</string>
+    <string name="brief_broadcast">Brief broadcast</string>
+    <string name="detailed_broadcast">Detailed broadcast</string>
+    <string name="humidity">Humidity: %1$d</string>
+    <string name="error">Error: %1$s</string>
+    <string name="wind_speed">Wind speed: %.1f %s</string>
+    <string name="direction">" (direction: %1$d°)"</string>
+    <string name="mph">mph</string>
+    <string name="mps">m/s</string>
+</resources>

@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name" translatable="false">WeatherBroadcast</string>
+    <string name="openweather_api_key" translatable="false">f65bec8b527df39e2b34cf3ab47c54d8</string>
+    <string name="hint_city">Введите город</string>
+    <string name="btn_get_weather">Получить погоду</string>
+    <string name="show_wind_direction">Показывать направление ветра</string>
+    <string name="brief_broadcast">Краткий прогноз</string>
+    <string name="detailed_broadcast">Подробное описание</string>
+    <string name="fahrenheit" translatable="false">°F</string>
+    <string name="celsius" translatable="false">°C</string>
+    <string name="humidity">Влажность: %1$d</string>
+    <string name="error">Ошибка: %1$s</string>
+    <string name="wind_speed">Скорость ветра: %.1f %s</string>
+    <string name="direction">" (направление: %1$d°)"</string>
+    <string name="mph">миль/ч</string>
+    <string name="mps">м/с</string>
+</resources>
