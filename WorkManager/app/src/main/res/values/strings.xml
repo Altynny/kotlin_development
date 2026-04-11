@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">WorkManager</string>
+    <string name="openweather_api_key">f65bec8b527df39e2b34cf3ab47c54d8</string>
+    <string name="city_weather_fetch_error">Ошибка %1$d для %2$s</string>
+    <string name="error">Ошибка: %1$s</string>
+    <string name="humidity">Влажность: %1$d</string>
+    <string name="loading">Загрузка...</string>
+    <string name="no_data">Нет данных</string>
+    <string name="loading_error">Ошибка загрузки</string>
+</resources>
